@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_login"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/user_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/user"
+            android:layout_alignParentLeft="true"
+            />
+
+        <TextView
+            android:id="@+id/music_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/user_image"
+            android:textSize="10pt"
+            android:textColor="@color/ivory"
+            />
+
+        <TextView
+            android:id="@+id/randomMusic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/myMusicButton"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="45dp"
+            android:background="@drawable/bg_mainfragment_item_div"
+            android:drawableEnd="@drawable/random_music_start"
+            android:drawableRight="@drawable/random_music_start"
+            android:gravity="center"
+            android:padding="10pt"
+            android:text="@string/music_list"
+            android:textColor="@color/deepskyblue"
+            android:textSize="12pt" />
+
+        <Button
+            android:id="@+id/myMusicButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/myFavoriteButton"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_mainfragment_item_div"
+            android:drawableEnd="@drawable/my_music_end"
+            android:drawableRight="@drawable/my_music_end"
+            android:padding="2pt"
+            android:text="@string/mainfragment_mymusic"
+            android:textColor="@color/deepskyblue"
+            android:textSize="10pt" />
+
+        <Button
+            android:id="@+id/myFavoriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bg_mainfragment_item_div"
+            android:drawableEnd="@drawable/my_favorite_music_end"
+            android:drawableRight="@drawable/my_favorite_music_end"
+            android:padding="2pt"
+            android:text="@string/mainfragment_myfavorite"
+            android:textColor="@color/deepskyblue"
+            android:textSize="10pt" />
+
+
+        <Button
+            android:id="@+id/latestPlayListButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/netPlayButton"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_mainfragment_item_div"
+            android:drawableEnd="@drawable/latest_play_list_end"
+            android:drawableRight="@drawable/latest_play_list_end"
+            android:padding="2pt"
+            android:text="@string/mainfragment_recentlyplay"
+            android:textColor="@color/deepskyblue"
+            android:textSize="10pt" />
+
+        <Button
+            android:id="@+id/netPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/myFavoriteButton"
+            android:layout_below="@+id/myFavoriteButton"
+            android:layout_marginTop="36dp"
+            android:background="@drawable/bg_mainfragment_item_div"
+            android:drawableEnd="@drawable/my_music_end"
+            android:drawableRight="@drawable/my_music_end"
+            android:padding="2pt"
+            android:text="@string/net_play"
+            android:textColor="@color/deepskyblue"
+            android:textSize="10pt" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

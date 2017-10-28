@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.tcl.huantan.hhpod.fragment.PlayFragment">
+
+    <com.tcl.huantan.hhpod.lyric.LyricView
+        android:id="@+id/lrcShowView"
+        android:layout_width="400dip"
+        android:layout_height="350dip"
+        android:layout_marginTop="50dp"
+        />
+
+    <ImageButton
+        android:id="@+id/dismiss_lyric_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/arrow_down" />
+
+    <ImageButton
+        android:id="@+id/my_favorite_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="350dip"
+        android:background="@color/colorlyricbackground" />
+
+</RelativeLayout>

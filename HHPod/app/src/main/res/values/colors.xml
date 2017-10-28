@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF72CAE1</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#00FF4081</color>
+    <color name="colorLoginText">#ffffff</color>
+    <color name="deepskyblue">#00BFFF</color>
+    <color name="colorButtonBackground">#20000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorlyricbackground">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="ivory">#FFFFF0</color>
+    <color name="grey">#A2A2A2</color>
+    <color name="colorWhite">#000000</color>
+    <color name="fragment_title_text">#FF72CAE1</color>
+</resources>

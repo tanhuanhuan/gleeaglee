@@ -1,0 +1,759 @@
+package com.tcl.huantan.hhpod.activity;
+
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.PersistableBundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import java.util.List;
+import java.util.logging.LogRecord;
+
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.tcl.huantan.hhpod.R;
+import com.tcl.huantan.hhpod.constant.GlobalValues;
+import com.tcl.huantan.hhpod.constant.MusicPlayerConstant;
+import com.tcl.huantan.hhpod.database.MusicPlayerDatabase;
+import com.tcl.huantan.hhpod.fragment.MainFragment;
+import com.tcl.huantan.hhpod.fragment.MyFavoriteFragment;
+import com.tcl.huantan.hhpod.fragment.MyMusicFragment;
+import com.tcl.huantan.hhpod.fragment.PlayFragment;
+import com.tcl.huantan.hhpod.fragment.RecentlyPlayFragment;
+import com.tcl.huantan.hhpod.menu.SlidingMenu;
+import com.tcl.huantan.hhpod.model.MusicInfo;
+import com.tcl.huantan.hhpod.service.PlayerService;
+import com.tcl.huantan.hhpod.util.FindSongs;
+
+public class MainActivity extends Activity implements MusicPlayerConstant,
+        MyMusicFragment.OnMyMusicFragmentInteractionListener,
+        PlayFragment.OnPlayFragmentInteractionListener,
+        RecentlyPlayFragment.OnRecentlyPlayFragmentInteractionListener,
+        MyFavoriteFragment.OnFavoriteFragmentInteractionListener, PlayerService.ISeekBarTest, PlayerService.IPlayerService {
+    public static final String TAG = "MainActivity";
+    //add m
+
+    //
+
+    private String music_url;
+
+    private boolean isPause;
+    private boolean isChangToNext;
+    private boolean notification_previous_music;
+    private boolean notification_next_music;
+    private boolean notification_pause_music;
+    private boolean notification_exit;
+    private int play_mode;
+    private int current_position;
+    private int current_position_bar;
+
+    private long exitTime;
+
+    private MsgReceiver msgReceiver;
+    private BarReceiver barReceiver;
+    private NotificationReceiver notificationReceiver;
+
+    private ImageButton play_button;
+    private ImageButton previous_song_button;
+    private ImageButton next_song_button;
+    private ImageButton play_mode_button;
+    private ListView recently_play_music_list;
+    private SeekBar seek_bar;
+    private Intent intent_to_service;
+    private Intent intent_to_fragment;
+    private Intent intent_to_changeMusic;
+    private Intent progress_change_intent_to_service;
+    private TextView music_info_textView;
+    private TextView singer_info_textView;
+    private FindSongs finder;
+    private PopupWindow popupPlayModeWindow;
+    private MainFragment mainFragment;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private MyMusicFragment myMusicFragment;
+    private SlidingMenu mMenu;
+
+
+    public static boolean isFavorite = false;
+    public static String[] music_array = null; //auto_complete array for search song
+    public static List<MusicInfo> musicInfos;
+    public static int music_position;
+    public static MusicPlayerDatabase myDataBase;
+    public static MainActivity mainActivity;
+
+    private Button mExitApplicationButton, mExitLoginButton;
+    /**
+     *
+     */
+    private PlayerService mPlayerService;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            PlayerService.LocalBinder mBinder = (PlayerService.LocalBinder) service;
+            mPlayerService = mBinder.getService();
+            Log.i(TAG, "mPlayerService" + mPlayerService);
+            test();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
+    private void test() {
+        mPlayerService.setSeekbarTest(this);
+    }
+
+
+    /**
+     * callback function of MyMusicFragment
+     */
+    @Override
+    public void onMyMusicFragmentInteraction(int message, int position) {
+        if (message == PlayerMsg.LIST_CLICK) {
+            if (musicInfos != null) {
+                isPause = false;
+                initService(position);
+            }
+        }
+    }
+
+    /**
+     * callback function of MyMusicFragment
+     */
+    public void onMyMusicFragmentInteraction(int message) {
+
+        myMusicFragment = new MyMusicFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_right);
+
+        switch (message) {
+            case PlayerMsg.CHANGE_TO_MY_MUSIC_FRAGMENT:
+                fragmentTransaction.replace(R.id.fragment_layout, myMusicFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+
+            case PlayerMsg.BACK_TO_MAIN_FRAGMENT:
+                fragmentTransaction.replace(R.id.fragment_layout, mainFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+        }
+    }
+
+    /**
+     * callback function of PlayFragment
+     */
+    public void onPlayFragmentInteraction(int message) {
+
+        MusicInfo music_Info = musicInfos.get(music_position);
+
+        switch (message) {
+            case PlayerMsg.DISMISS_CLICK:
+                myMusicFragment = new MyMusicFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.slide_in_up, R.animator.slide_out_down);
+                fragmentTransaction.replace(R.id.fragment_layout, mainFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+
+            case PlayerMsg.ADD_TO_FAVORITE:
+                isFavorite = true;
+                music_Info.setFavorite(isFavorite);
+
+                MusicPlayerDatabase.AddData(
+                        MusicPlayerDatabase.TABLE_NAME_FAVORITE,
+                        (int) music_Info.getId(),
+                        music_Info.getTitle(),
+                        music_Info.getArtist(),
+                        music_Info.getDuration(),
+                        music_Info.getUrl(),
+                        (int) music_Info.getAlbum_id()
+                );
+                break;
+            case PlayerMsg.DELETE_FROM_FAVORITE:
+                isFavorite = false;
+                musicInfos.get(music_position).setFavorite(isFavorite);
+                MusicPlayerDatabase.DeleteData(
+                        MusicPlayerDatabase.TABLE_NAME_FAVORITE,
+                        (int) music_Info.getId());
+
+                break;
+
+        }
+    }
+
+    /**
+     * callback function of RecentlyPlayFragment
+     */
+    public void onRecentlyPlayFragmentInteraction() {
+    }
+
+    /**
+     * callback function of RecentlyPlayFragment
+     */
+    public void onRecentlyPlayFragmentInteraction(int message, int position) {
+        if (message == PlayerMsg.LIST_CLICK) {
+            if (musicInfos != null) {
+                isPause = false;
+                initService(position);
+            }
+        }
+    }
+
+    /**
+     * callback function of MyFavoriteFragment
+     */
+    public void onFavoriteFragmentInteraction() {
+
+    }
+
+    /**
+     * callback function of MyFavoriteFragment
+     */
+    public void onFavoriteFragmentInteraction(int message, int position) {
+        if (message == PlayerMsg.LIST_CLICK) {
+            if (musicInfos != null) {
+                isPause = false;
+                initService(position);
+            }
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate executed");
+        super.onCreate(savedInstanceState);
+
+        mainActivity = this;
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_main);
+        initView();
+        initData();
+        initEvent();
+        initMusicFunction();
+//        initService();
+
+
+    }
+
+    public void initView() {
+        recently_play_music_list = (ListView) findViewById(R.id.recently_play_music_list);
+        play_button = (ImageButton) findViewById(R.id.play_button);
+        seek_bar = (SeekBar) findViewById(R.id.process_bar);
+        play_mode_button = (ImageButton) findViewById(R.id.play_mode_button);
+        play_mode_button.setImageResource(R.drawable.play_mode_photo);
+        next_song_button = (ImageButton) findViewById(R.id.next_song_button);
+        previous_song_button = (ImageButton) findViewById(R.id.previous_song_button);
+        mMenu = (SlidingMenu) findViewById(R.id.id_menu);
+
+        mExitApplicationButton = (Button) mMenu.findViewById(R.id.exit_application);
+        mExitLoginButton = (Button) mMenu.findViewById(R.id.exit_login);
+        mExitApplicationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        mExitLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.mainActivity);
+                dialog.setMessage("Are you sure to logout ?");
+                dialog.setCancelable(false);
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        SharedPreferences.Editor editor = LoginActivity.mSharedPreferences.edit();
+                        editor.putString(LoginActivity.ACCOUNT, "");
+                        editor.putString(LoginActivity.PASSWORD, "");
+                        editor.putBoolean(LoginActivity.AUTO_LOGIN, false);
+                        editor.commit();
+
+//                        LoginActivity.mRememberCheckBox.setChecked(false);
+                        Intent intent = new Intent();
+                        intent.setAction("android.intent.action.startloginactivity");
+                        MainActivity.mainActivity.startActivity(intent);
+                        Log.d(TAG, "logout!!!!!!!!!!!!");
+                    }
+                });
+                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int i) {
+                    }
+                });
+                dialog.show();
+            }
+        });
+    }
+
+    public void initData() {
+        mainFragment = new MainFragment();
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_layout, mainFragment).commit();
+
+
+        isPause = true;
+        exitTime = 0;
+        play_mode = MusicPlayerConstant.PlayerMsg.LOOP_MODE;
+        current_position = 0;
+        music_position = 0;
+
+        finder = new FindSongs();
+        msgReceiver = new MsgReceiver();
+        barReceiver = new BarReceiver();
+        notificationReceiver = new NotificationReceiver();
+
+        View play_mode_window = this.getLayoutInflater().inflate(R.layout.popup_window_layout, null);
+        popupPlayModeWindow = new PopupWindow(play_mode_window, 170, 100);
+
+
+        intent_to_service = new Intent("com.example.communication.PLAY");
+        intent_to_fragment = new Intent("com.example.communication.MUSIC_LIST_SELECTOR");
+        intent_to_changeMusic = new Intent("com.example.communication.ChANGE_MUSIC");
+        progress_change_intent_to_service = new Intent("com.example.communication.PROGRESS_BAR");
+    }
+
+    public void initEvent() {
+        play_button.setImageResource(R.drawable.play_photo);
+        play_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPause) {
+                    isPause = false;
+                    play_button.setImageResource(R.drawable.pause_photo);
+                } else {
+                    isPause = true;
+                    play_button.setImageResource(R.drawable.play_photo);
+                }
+                intent_to_service.putExtra(GlobalValues.MUSIC_PATH_TAG, current_position);
+
+                intent_to_service.putExtra("isPause", isPause);
+                sendBroadcast(intent_to_service);
+            }
+        });
+
+        musicInfos = finder.getMusicInfos(getContentResolver());
+
+
+        next_song_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                changeMusic(play_mode, MusicPlayerConstant.PlayerMsg.NEXT_MUSIC, musicInfos);
+
+            }
+        });
+
+        previous_song_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeMusic(play_mode, MusicPlayerConstant.PlayerMsg.PREVIOUS_MUSIC, musicInfos);
+            }
+        });
+
+
+        seek_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                current_position_bar = seekBar.getProgress();
+                progress_change_intent_to_service.putExtra("current_position", current_position_bar);
+                progress_change_intent_to_service.putExtra("isPause", isPause);
+                sendBroadcast(progress_change_intent_to_service);
+//                if(isPause){
+//                    seekBar.setProgress(current_position);
+//                }else {
+//                    mPlayerService.playMusic(current_position);
+//                }
+
+
+            }
+        });
+
+        play_mode_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (popupPlayModeWindow.isShowing()) {
+                    popupPlayModeWindow.dismiss();
+                } else {
+                    if (play_mode == MusicPlayerConstant.PlayerMsg.LOOP_MODE)
+                        Toast.makeText(getApplicationContext(), "当前模式为循环播放模式", Toast.LENGTH_SHORT).show();
+                    if (play_mode == MusicPlayerConstant.PlayerMsg.RANDOM_MODE)
+                        Toast.makeText(getApplicationContext(), "当前模式为随机播放模式", Toast.LENGTH_SHORT).show();
+                    popupPlayModeWindow.showAsDropDown(v);
+                }
+            }
+        });
+    }
+
+
+    public void initMusicFunction() {
+        //init music data
+        myDataBase = new MusicPlayerDatabase(getApplicationContext(), recently_play_music_list);
+        MusicPlayerDatabase.CreateDataBase();
+
+        music_array = getMusicList();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart executed");
+        IntentFilter intentMsgFilter = new IntentFilter();
+        IntentFilter intentBarFilter = new IntentFilter();
+        IntentFilter intentNotificationFilter = new IntentFilter();
+
+        intentMsgFilter.addAction("com.example.communication.RECEIVER");
+        registerReceiver(msgReceiver, intentMsgFilter);
+
+        intentBarFilter.addAction("com.example.communication.BAR");
+        registerReceiver(barReceiver, intentBarFilter);
+
+        intentNotificationFilter.addAction("com.example.communication.NOTIFICATION_TO_ACTIVITY");
+        registerReceiver(notificationReceiver, intentNotificationFilter);
+
+        super.onStart();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy executed");
+        unregisterReceiver(msgReceiver);
+        unregisterReceiver(barReceiver);
+        unregisterReceiver(notificationReceiver);
+        Intent stopIntent = new Intent(this, PlayerService.class);
+        stopService(stopIntent);
+        Log.d(TAG, "onDestroy executed");
+        super.onDestroy();
+    }
+
+    public void gotoMainFragment() {
+        MainFragment mainFragment = new MainFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_right);
+        fragmentTransaction.replace(R.id.fragment_layout, mainFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_exit) {
+            System.exit(0);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private class MsgReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            music_info_textView = (TextView) findViewById(R.id.music_info_textView);
+            singer_info_textView = (TextView) findViewById(R.id.singer_info_textView);
+
+            music_info_textView.setText(intent.getStringExtra("title"));
+            singer_info_textView.setText(intent.getStringExtra("artist"));
+
+        }
+    }
+
+    private class BarReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (seek_bar.getMax() - current_position <= 1100) {
+                changeMusic(play_mode, MusicPlayerConstant.PlayerMsg.NEXT_MUSIC, musicInfos);
+            } else {
+                current_position = intent.getIntExtra("position", 0);
+//                Log.e(TAG,"current_position:  " + current_position);
+                seek_bar.setProgress(current_position);
+            }
+        }
+    }
+
+    private class NotificationReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            notification_previous_music = intent.getBooleanExtra("notification_previous_music", false);
+            notification_next_music = intent.getBooleanExtra("notification_next_music", false);
+            notification_pause_music = intent.getBooleanExtra("notification_pause_music", false);
+            notification_exit = intent.getBooleanExtra("notification_exit", false);
+
+            if (notification_previous_music) {
+                changeMusic(play_mode, MusicPlayerConstant.PlayerMsg.PREVIOUS_MUSIC, musicInfos);
+            }
+
+            if (notification_next_music) {
+                changeMusic(play_mode, MusicPlayerConstant.PlayerMsg.NEXT_MUSIC, musicInfos);
+            }
+
+            if (notification_pause_music) {
+                play_button.setImageResource(R.drawable.play_photo);
+            } else {
+                play_button.setImageResource(R.drawable.pause_photo);
+            }
+            if (notification_exit) {
+                System.exit(0);
+            }
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onCreate(savedInstanceState, persistentState);
+    }
+
+    public void changeMusic(int mode, int msg, List<MusicInfo> musicInfos) {
+        isChangToNext = true;
+        isPause = false;
+        current_position = 0;
+        play_button.setImageResource(R.drawable.pause_photo);
+        switch (mode) {
+            case MusicPlayerConstant.PlayerMsg.LOOP_MODE:
+                switch (msg) {
+                    case MusicPlayerConstant.PlayerMsg.NEXT_MUSIC:
+                        if (music_position < musicInfos.size() - 1)
+                            music_position++;
+                        else
+                            music_position = 0;
+
+                        break;
+
+                    case MusicPlayerConstant.PlayerMsg.PREVIOUS_MUSIC:
+                        if (music_position >= 1)
+                            music_position--;
+                        else
+                            music_position = musicInfos.size() - 1;
+                        break;
+                }
+                break;
+
+            case MusicPlayerConstant.PlayerMsg.RANDOM_MODE:
+                music_position = (int) (Math.random() * (musicInfos.size() - 1));
+                break;
+        }
+
+        try {
+            initService(music_position);
+            MusicInfo mp3_Info = musicInfos.get(music_position);
+            isFavorite = mp3_Info.getFavorite();
+
+//            intent_to_fragment.putExtra("selector_position",music_position);
+            myMusicFragment.setCurrent_music(music_position);
+            //           sendBroadcast(intent_to_fragment);
+
+            music_url = mp3_Info.getUrl();
+
+            music_info_textView.setText(mp3_Info.getTitle());
+            singer_info_textView.setText(mp3_Info.getArtist());
+            seek_bar.setMax((int) mp3_Info.getDuration());
+            intent_to_service.putExtra("isPause", isPause);
+            progress_change_intent_to_service.putExtra("isPause", isPause);
+
+            intent_to_changeMusic.putExtra("music_title", mp3_Info.getTitle());
+            intent_to_changeMusic.putExtra("music_artist", mp3_Info.getArtist());
+
+
+            intent_to_changeMusic.putExtra("music_url", music_url);
+            intent_to_changeMusic.putExtra("isChangeToNext", isChangToNext);
+            sendBroadcast(intent_to_service);
+            sendBroadcast(intent_to_changeMusic);
+
+            isChangToNext = false;
+
+            long time = System.currentTimeMillis();
+
+            if (MusicPlayerDatabase.IsExistData(MusicPlayerDatabase.TABLE_NAME, (int) mp3_Info.getId())) {
+                MusicPlayerDatabase.UpdateData(MusicPlayerDatabase.TABLE_NAME, (int) mp3_Info.getId()
+                        , time);
+            } else {
+                MusicPlayerDatabase.AddData(
+                        MusicPlayerDatabase.TABLE_NAME,
+                        (int) mp3_Info.getId(),
+                        mp3_Info.getTitle(),
+                        mp3_Info.getArtist(),
+                        mp3_Info.getDuration(),
+                        mp3_Info.getUrl(),
+                        (int) mp3_Info.getAlbum_id(),
+                        time
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public int getMusicTitle() {
+        return music_position;
+    }
+
+    public void loop_play_mode_listener(View v) {
+        Toast.makeText(getApplicationContext(), "更改为循环播放模式", Toast.LENGTH_SHORT).show();
+        play_mode = MusicPlayerConstant.PlayerMsg.LOOP_MODE;
+        play_mode_button.setImageResource(R.drawable.play_mode_photo);
+        popupPlayModeWindow.dismiss();
+    }
+
+    public void random_play_mode_listener(View v) {
+        Toast.makeText(getApplicationContext(), "更改为随机播放模式", Toast.LENGTH_SHORT).show();
+        play_mode = MusicPlayerConstant.PlayerMsg.RANDOM_MODE;
+        play_mode_button.setImageResource(R.drawable.random_play_mode);
+        popupPlayModeWindow.dismiss();
+    }
+
+    public void main_activity_bottom_layout_listener(View v) {
+
+        String current_music_url = musicInfos.get(music_position).getUrl();
+
+        PlayFragment playFragment = PlayFragment.newInstance(current_music_url);
+
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in_up, R.animator.slide_out_down);
+        fragmentTransaction.replace(R.id.fragment_layout, playFragment);
+        fragmentTransaction.addToBackStack(null);
+
+        fragmentTransaction.commit();
+
+    }
+
+    private void initService(int position) {
+        music_position = position;
+        MusicInfo musicInfo = musicInfos.get(position);
+        Intent intent = new Intent("com.example.communication.MSG_ACTION");
+        play_button.setImageResource(R.drawable.pause_photo);
+        intent.putExtra("url", musicInfo.getUrl());
+        intent.putExtra("title", musicInfo.getTitle());
+        intent.putExtra("artist", musicInfo.getArtist());
+        intent.putExtra("album", musicInfo.getAlbum());
+        intent.putExtra("album_id", musicInfo.getAlbum_id());
+        intent.putExtra("MSG", MusicPlayerConstant.PlayerMsg.PLAY_MSG);
+        intent.setClass(MainActivity.this, PlayerService.class);
+        seek_bar.setMax((int) (musicInfo.getDuration()));
+        startService(intent);
+        bindService(intent, mServiceConnection, 0);//TODO
+
+        //if (mPlayerService != null)mPlayerService.setSeekbarTest(this);
+    }
+
+
+    private void initService() {
+        Intent intent = new Intent("com.example.communication.MSG_ACTION");
+        intent.setClass(MainActivity.this, PlayerService.class);
+        bindService(intent, mServiceConnection, 0);//TODO
+
+    }
+
+    /**
+     * the method to search the musicinfo to auto_complete the song
+     */
+    public static String[] getMusicList() {
+        String[] str = new String[musicInfos.size() - 1];
+        for (int i = 0; i < musicInfos.size() - 1; i++) {
+            str[i] = musicInfos.get(i).getTitle();
+        }
+        return str;
+    }
+
+    public void toggleMenu(View view) {
+        mMenu.toggle();
+    }
+
+
+//    public static int findPosition(String url){
+//        int position = 0;
+//        while(position < musicInfos.size()){
+//            if(url.equals(musicInfos.get(position).getUrl())){
+//                return position;
+//            }
+//            else{
+//                position++;
+//            }
+//        }
+//        return -1;
+
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+//            if((System.currentTimeMillis()-exitTime) > 2000){
+//                Toast.makeText(this, "再按一次返回桌面", Toast.LENGTH_SHORT).show();
+//                exitTime = System.currentTimeMillis();
+//            } else {
+//                Intent i = new Intent(Intent.ACTION_MAIN);
+//                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                i.addCategory(Intent.CATEGORY_HOME);
+//                startActivity(i);
+//            }
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+
+    //TODO
+    public SeekBar getSeekBar() {
+        return seek_bar;
+    }
+
+    @Override
+    public void updateSeekBar(SeekBar seekBar) {
+
+    }
+}
+

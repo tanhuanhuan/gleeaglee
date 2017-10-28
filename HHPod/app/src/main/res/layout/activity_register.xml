@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.tcl.huantan.hhpod.util.CircleImageView
+            android:id="@+id/imageviewui"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/playericon"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            />
+
+
+        <RelativeLayout
+            android:id="@+id/register_div"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageviewui"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/background_login_div_bg"
+            android:padding="15dp">
+
+
+            <LinearLayout
+                android:id="@+id/username_ui"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="20dip"
+                    android:paddingLeft="20dip"
+                    android:text="@string/user_name"
+                    android:textColor="@color/colorLoginText"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="20dip"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/edittext_bg"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingLeft="4dp"
+                    android:paddingTop="10dip"
+                    android:textSize="16sp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/password_ui"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/username_ui"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:paddingLeft="20dip"
+                    android:text="@string/user_password"
+                    android:textColor="@color/colorLoginText"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/edittext_bg"
+                    android:hint="@string/input_password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="16sp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/password_again_ui"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/password_ui"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:paddingLeft="20dip"
+                    android:text="@string/user_password"
+                    android:textColor="@color/colorLoginText"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/password_again"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/edittext_bg"
+                    android:hint="@string/confirm_password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="16sp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/email_ui"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/password_again_ui"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:paddingLeft="20dip"
+                    android:text="@string/email"
+                    android:textColor="@color/colorLoginText"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/edittext_bg"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:paddingLeft="4dp"
+                    android:paddingTop="10dip"
+                    android:textSize="16sp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/phone_ui"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/email_ui"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:paddingLeft="20dip"
+                    android:text="@string/tel"
+                    android:textColor="@color/colorLoginText"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/phone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dip"
+                    android:layout_marginTop="10dip"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/edittext_bg"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:paddingLeft="4dp"
+                    android:paddingTop="10dip"
+                    android:textSize="16sp"></EditText>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/phone_ui"
+                android:layout_below="@id/phone_ui"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_login_bg"
+                android:text="@string/button_register"
+                android:textColor="#EAEAEA"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>

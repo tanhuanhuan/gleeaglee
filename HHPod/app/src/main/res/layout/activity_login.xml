@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        >
+
+        <com.tcl.huantan.hhpod.util.CircleImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:thh="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/imageview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/playericon"
+            thh:border_width="3dp"
+            />
+    </RelativeLayout>
+
+<RelativeLayout
+    android:id="@+id/login_div"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginTop="15dp"
+    android:background="@drawable/background_login_div_bg">
+    <TextView
+        android:id="@+id/login_user_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:text="@string/user_name"
+        style="@style/nomalText"
+        />
+    <EditText
+        android:id="@+id/login_username"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:paddingLeft="4dp"
+        android:hint="@string/username_hint"
+        android:layout_below="@id/login_user_input"
+        android:maxLines="1"
+        android:inputType="text"
+        android:background="@drawable/edittext_bg"
+        />
+    <TextView
+        android:id="@+id/login_password_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_username"
+        android:layout_marginTop="3dp"
+        android:text="@string/user_password"
+        style="@style/nomalText"
+        />
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:paddingLeft="4dp"
+        android:hint="@string/password_hint"
+        android:layout_below="@id/login_password_input"
+        android:maxLines="1"
+        android:inputType="textPassword"
+        android:background="@drawable/edittext_bg" />
+
+    <LinearLayout
+        android:id="@+id/checkbox_ui"
+        android:layout_below="@id/login_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dip" >
+
+        <CheckBox
+            android:id="@+id/checkbox_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dip"
+            android:layout_marginRight="50dip"
+            android:text="@string/password_display"
+            android:textColor="#A2A2A2"
+            />
+
+        <CheckBox
+            android:id="@+id/checkbox_remember"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password_remember"
+            android:textColor="#A2A2A2"
+            />
+    </LinearLayout>
+    <Button
+        android:id="@+id/button_user_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/checkbox_ui"
+        android:layout_alignRight="@id/checkbox_ui"
+        android:layout_marginTop="8dp"
+        android:text="@string/button_login"
+        android:textSize="18sp"
+        android:textColor="#EAEAEA"
+        android:background="@drawable/button_login_bg"
+        />
+</RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:id="@+id/user_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:autoLink="all"
+            android:textColor="#888"
+            android:textColorLink="#FF0066CC"
+            android:text="@string/login_register_link"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

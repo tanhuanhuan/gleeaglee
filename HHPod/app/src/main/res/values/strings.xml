@@ -1,0 +1,65 @@
+<resources>
+    <string name="app_name">HHPod</string>
+    <string name="user_name">用户名: </string>
+    <string name="login">登陆</string>
+    <string name="username_hint">邮箱/手机号/用户名</string>
+    <string name="user_password">密&#160;&#160;&#160;&#160;码: </string>
+    <string name="password_hint">6-16位密码</string>
+    <string name="password_display">显示密码</string>
+    <string name="password_remember">记住密码</string>
+    <string name="button_login">登陆</string>
+    <string name="button_register">注册</string>
+    <string name="username_null">用户名不能为空</string>
+    <string name="password_short">密码不能少于6个字符</string>
+    <string name="password_long">密码不能多于16个字符</string>
+    <string name="password_null">密码不能为空</string>
+    <string name="login_error">用户名或密码输入错误，登录失败！</string>
+    <string name="music_list"> 随 便 点 一 首</string>
+    <string name="mainfragment_mymusic">我 的 音 乐</string>
+    <string name="mainfragment_myfavorite">我 的 最 爱</string>
+    <string name="mainfragment_recentlyplay">最 近 播 放</string>
+    <string name="recentlyplayfragment_text">最近播放</string>
+    <string name="myfavoritefragment_text">我的最爱</string>
+    <string name="mymusicfragment_text">我的音乐</string>
+    <string name="no_data">当前手机内无音乐，请添加！</string>
+    <string name="newregister_text">新用户注册</string>
+    <string name="input_password">6-16位密码</string>
+    <string name="confirm_password">请再次输入密码！</string>
+    <string name="email">邮&#160;&#160;&#160;&#160;箱: </string>
+    <string name="tel">电&#160;&#160;&#160;&#160;话: </string>
+    <string name="password_diffent">两次输入密码不一致！</string>
+    <string name="email_illegal">邮箱格式不正确！</string>
+    <string name="login_succeed">"注册成功！"</string>
+    <string name="loop_play">循 环 播 放</string>
+    <string name="random_play">随 机 播 放</string>
+    <string name="net_play">网 上 动 听</string>
+    <string name="delete_title">删除音乐</string>
+    <string name="confirm_delete">确定删除: </string>
+    <string name="comfirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="phone_number_illegal">手机号码格式不正确！</string>
+    <string name="user_exist">该用户名已存在！</string>
+    <string name="password_error">密码设置不符合规定，请重新设置！</string>
+    <string name="action_settings">Settings</string>
+    <string name="application_exit">退出应用</string>
+    <string name="login_exit">退出登陆</string>
+    <string name="action_exit">退出</string>
+    <string name="login_register_link">没有账号?<a href='' onclick='defineField(this);return false' target=''>注册</a></string>
+    <string name="random_play_mode_toast">您当前的播放模式为随机播放！</string>
+    <string name="loop_play_mode_toast">您当前的播放模式为顺序播放</string>
+    <string name="notification_content">欢迎来到谭环环音乐世界</string>
+    <string name="remove_favorite">已经取消我的最爱</string>
+    <string name="add_favorite">已经加入我的最爱</string>
+    <string name="random_toast">谭环环为您点了一首歌</string>
+    <string name="no_lyric">一丢丢歌词都没找到,下载后再来找我吧.......</string>
+    <string name="lyric_exception">没有读取到歌词.....</string>
+    <string name="back_key">连续点击两次返回桌面</string>
+    <string name="log_out">确定退出登陆吗?</string>
+    <string name="menu_hi">Hi</string>
+    <string name="random_no_music">本地没有发现音乐,请下载之后再进行播放</string>
+
+
+
+
+</resources>
